@@ -12,7 +12,7 @@ Context window usage, token counts, cache stats, all sitting in your toolbar whi
 2. Open `chrome://extensions`
 3. Turn on **Developer mode** (top right)
 4. Click **Load unpacked** and select the `extension/` folder
-5. Copy the extension ID from the card that appears
+5. Copy the extension ID from the card that appears — it is a 32-character string like `abcdefghijklmnopqrstuvwxyz123456` shown under the extension name
 
 ### Step 2: Install the native host
 
@@ -22,14 +22,14 @@ The extension can't read your local files directly (browser security), so it tal
 ```bash
 git clone https://github.com/akakarantzas/claude-code-counter
 cd claude-code-counter
-bash scripts/install.sh --extension-id YOUR_EXTENSION_ID
+bash scripts/install-mac-linux.sh --extension-id YOUR_EXTENSION_ID
 ```
 
 **Windows (PowerShell):**
 ```powershell
 git clone https://github.com/akakarantzas/claude-code-counter
 cd claude-code-counter
-.\scripts\install.ps1 -ExtensionId YOUR_EXTENSION_ID
+.\scripts\install-windows.ps1 -ExtensionId YOUR_EXTENSION_ID
 ```
 
 That's it. Click the icon in your toolbar and you'll see your token usage update every 2.5 seconds.
@@ -57,7 +57,12 @@ Claude Code saves every session as a `.jsonl` file in `~/.claude/projects/`. Eac
 
 **macOS / Linux:**
 ```bash
-bash scripts/uninstall.sh
+bash scripts/uninstall-mac-linux.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+.\scripts\uninstall-windows.ps1
 ```
 
 Then remove the extension from `chrome://extensions`.
