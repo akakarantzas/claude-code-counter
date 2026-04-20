@@ -14,8 +14,10 @@ import sys
 import struct
 import hashlib
 import logging
+import urllib.request
+import urllib.error
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # Log to a file (stdout is reserved for native messaging protocol)
 log_path = Path.home() / ".claude" / "counter_host.log"
@@ -147,6 +149,133 @@ def parse_session(filepath: Path) -> dict:
     }
 
 
+# ── Usage quota ───────────────────────────────────────────────────────────────
+
+def read_credentials(claude_dir: Path) -> dict | None:
+    try:
+        with open(claude_dir / ".credentials.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, PermissionError):
+        return None
+
+
+def fetch_oauth_usage(access_token: str) -> dict | None:
+    try:
+        req = urllib.request.Request(
+            "https://api.anthropic.com/api/oauth/usage",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        log.info("OAuth usage response keys: %s", list(data.keys()))
+
+        # Normalize — try known field name patterns
+        weekly_pct = (
+            data.get("weekly_pct") or data.get("weeklyUsagePct") or
+            data.get("weekly_usage_pct") or data.get("week_pct")
+        )
+        session_pct = (
+            data.get("session_pct") or data.get("sessionUsagePct") or
+            data.get("session_usage_pct")
+        )
+        if weekly_pct is None and session_pct is None:
+            log.warning("Unknown OAuth usage format: %s", data)
+            return None
+
+        result = {"source": "oauth"}
+        if weekly_pct is not None:
+            result["weekly_pct"] = float(weekly_pct)
+        if session_pct is not None:
+            result["session_pct"] = float(session_pct)
+        return result
+
+    except urllib.error.HTTPError as e:
+        log.warning("OAuth usage API HTTP %s", e.code)
+        return None
+    except Exception as e:
+        log.warning("OAuth usage API failed: %s", e)
+        return None
+
+
+def compute_local_usage(claude_dir: Path) -> dict:
+    now = datetime.now(timezone.utc)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    week_start = now - timedelta(days=7)
+    today_tokens = 0
+    week_tokens = 0
+
+    projects_dir = claude_dir / "projects"
+    if not projects_dir.exists():
+        return {"source": "local", "today_tokens": 0, "week_tokens": 0}
+
+    for jsonl_file in projects_dir.glob("**/*.jsonl"):
+        # Skip files untouched in the last 7 days
+        try:
+            if jsonl_file.stat().st_mtime < week_start.timestamp():
+                continue
+        except OSError:
+            continue
+
+        seen_ids = set()
+        try:
+            with open(jsonl_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        entry = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+
+                    if entry.get("type") != "assistant":
+                        continue
+
+                    msg = entry.get("message", {})
+                    msg_id = msg.get("id")
+                    if msg_id:
+                        if msg_id in seen_ids:
+                            continue
+                        seen_ids.add(msg_id)
+
+                    ts_raw = entry.get("timestamp")
+                    if not ts_raw:
+                        continue
+                    try:
+                        ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
+                    except Exception:
+                        continue
+
+                    if ts < week_start:
+                        continue
+
+                    usage = msg.get("usage", {})
+                    tokens = (
+                        usage.get("input_tokens", 0) +
+                        usage.get("output_tokens", 0) +
+                        usage.get("cache_creation_input_tokens", 0)
+                    )
+                    week_tokens += tokens
+                    if ts >= today_start:
+                        today_tokens += tokens
+
+        except (PermissionError, FileNotFoundError, OSError):
+            continue
+
+    return {"source": "local", "today_tokens": today_tokens, "week_tokens": week_tokens}
+
+
+def get_usage_info(claude_dir: Path) -> dict | None:
+    creds = read_credentials(claude_dir)
+    if creds:
+        token = creds.get("accessToken") or creds.get("access_token")
+        if token:
+            result = fetch_oauth_usage(token)
+            if result:
+                return result
+    return compute_local_usage(claude_dir)
+
+
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
 def handle_get_stats() -> dict:
@@ -163,6 +292,8 @@ def handle_get_stats() -> dict:
     data = parse_session(session_file)
     if data["turns"] == 0:
         return {"error": "no_session"}
+
+    data["usage_quota"] = get_usage_info(claude_dir)
 
     log.info("Returning stats: %d turns, %d input tokens", data["turns"], data["input_tokens"])
     return {"data": data}

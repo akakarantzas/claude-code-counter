@@ -53,6 +53,12 @@ function fmtTokens(n) {
   return String(n);
 }
 
+function fmtTokensRound(n) {
+  if (n >= 1_000_000) return Math.round(n / 1_000_000) + "M";
+  if (n >= 1_000)     return Math.round(n / 1_000) + "k";
+  return String(n);
+}
+
 function fmtDuration(secs) {
   if (!secs) return "—";
   const m = Math.floor(secs / 60);
@@ -202,6 +208,37 @@ function exportJson(d) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function renderUsage(quota) {
+  if (!quota) { hide("usageSection"); return; }
+
+  show("usageSection");
+
+  if (quota.source === "oauth") {
+    show("usageOAuthView");
+    hide("usageLocalView");
+    document.getElementById("usageSourceBadge").textContent = "live";
+
+    if (quota.weekly_pct !== undefined) {
+      set("usageWeeklyPct", Math.round(quota.weekly_pct) + "%");
+      setBar(document.getElementById("usageWeeklyBar"), quota.weekly_pct / 100);
+    }
+    if (quota.session_pct !== undefined) {
+      set("usageSessionPct", Math.round(quota.session_pct) + "%");
+      show("usageSessionRow");
+    } else {
+      hide("usageSessionRow");
+    }
+  } else if (quota.source === "local") {
+    hide("usageOAuthView");
+    show("usageLocalView");
+    document.getElementById("usageSourceBadge").textContent = "estimated";
+    set("usageTodayVal", fmtTokens(quota.today_tokens || 0));
+    set("usageWeekVal",  fmtTokens(quota.week_tokens  || 0));
+  } else {
+    hide("usageSection");
+  }
+}
+
 function renderStats(data) {
   lastData = data;
   hide("disconnected");
@@ -220,7 +257,7 @@ function renderStats(data) {
   // Context hero
   const pctVal = Math.round(ctxFraction * 100);
   animateCtxPercent(pctVal, ctxFraction);
-  set("ctxTokens",    "Avg per turn: ~" + fmtTokens(avgTotal) + " / 200k");
+  set("ctxTokens",    "Avg per turn: ~" + fmtTokensRound(avgTotal));
   set("ctxRemaining", fmtTokens(CONTEXT_WINDOW - avgTotal) + " remaining");
 
   const statusEl = document.getElementById("ctxStatus");
@@ -320,6 +357,9 @@ function renderStats(data) {
   } else {
     hide("footerSession");
   }
+
+  // Account usage
+  renderUsage(data.usage_quota ?? null);
 
   // Timestamp
   const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });

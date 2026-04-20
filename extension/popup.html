@@ -44,7 +44,7 @@
         <div class="ctx-percent-label">Context used</div>
         <div class="ctx-percent" id="ctxPercent">—</div>
         <div class="ctx-tokens" id="ctxTokens">—</div>
-        <div class="qualifier">of 200k limit <span class="tip" title="Average tokens sent per turn (input + cache read). The percentage above shows how much of Claude's 200k context window a typical turn consumes.">ⓘ</span></div>
+        <div class="qualifier">of 200k context <span class="tip" title="Average tokens sent per turn (input + cache read). The percentage above shows how much of Claude's 200k context window a typical turn consumes.">ⓘ</span></div>
         <div class="trend-row" id="ctxTrend" style="display:none">
           <span class="trend-spark" id="ctxSpark"></span>
           <span class="trend-delta" id="ctxDelta"></span>
@@ -128,6 +128,42 @@
       <div class="warn-bar" id="cacheWarn" style="display:none">
         <span class="warn-icon">↘</span>
         <span class="warn-text" id="cacheWarnText"></span>
+      </div>
+    </section>
+
+    <!-- Account Usage -->
+    <section class="section" id="usageSection" style="display:none">
+      <div class="section-header">
+        <span class="section-title">Account Usage <span class="tip" title="Tokens consumed against your Anthropic plan limit across all sessions.">ⓘ</span></span>
+        <span class="usage-source-badge" id="usageSourceBadge"></span>
+      </div>
+      <!-- OAuth view: real % from Anthropic -->
+      <div id="usageOAuthView" style="display:none">
+        <div class="usage-pct-row">
+          <span class="usage-pct-val" id="usageWeeklyPct">—</span>
+          <span class="usage-pct-suffix">of weekly limit</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="usageWeeklyBar"></div>
+        </div>
+        <div id="usageSessionRow" style="display:none">
+          <div class="qualifier" style="margin-top:6px;">Session: <span id="usageSessionPct">—</span></div>
+        </div>
+      </div>
+      <!-- Local fallback: token counts from JSONL files -->
+      <div id="usageLocalView" style="display:none">
+        <div class="usage-local-grid">
+          <div class="usage-local-item">
+            <div class="usage-local-val" id="usageTodayVal">—</div>
+            <div class="cache-metric-label">tokens today</div>
+          </div>
+          <div class="cache-metric-sep"></div>
+          <div class="usage-local-item">
+            <div class="usage-local-val" id="usageWeekVal">—</div>
+            <div class="cache-metric-label">tokens this week</div>
+          </div>
+        </div>
+        <div class="qualifier" style="margin-top:6px;">from local files · no limit data available</div>
       </div>
     </section>
 
