@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git stash *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
