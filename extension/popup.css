@@ -1,0 +1,248 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  background: #1a1a1a;
+  color: #d4d4d4;
+  width: 300px;
+  min-height: 100px;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0f0f0;
+  letter-spacing: -0.01em;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #444;
+  transition: background 0.3s;
+}
+
+.status-dot.connected    { background: #4ade80; }
+.status-dot.disconnected { background: #555; }
+.status-dot.error        { background: #f87171; }
+
+/* ── State panels ── */
+.state-panel {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.disconnected-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.disconnected-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 6px;
+}
+
+.disconnected-sub {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.btn-install {
+  display: inline-block;
+  padding: 7px 14px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.btn-install:hover { background: #1d4ed8; }
+
+/* ── Sections ── */
+.section {
+  padding: 11px 14px;
+  border-bottom: 1px solid #222;
+}
+
+.section-footer {
+  border-bottom: none;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 7px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+.section-meta {
+  font-size: 11px;
+  color: #555;
+}
+
+/* ── Progress bars ── */
+.bar-track {
+  height: 6px;
+  background: #2a2a2a;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #4ade80;
+  transition: width 0.4s ease, background 0.4s ease;
+  width: 0%;
+}
+
+.bar-fill.yellow { background: #facc15; }
+.bar-fill.red    { background: #f87171; }
+
+.bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #555;
+}
+
+/* ── Token grid ── */
+.token-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.token-card {
+  background: #222;
+  border-radius: 6px;
+  padding: 7px 6px;
+  text-align: center;
+}
+
+.token-label {
+  font-size: 10px;
+  color: #555;
+  margin-bottom: 3px;
+}
+
+.token-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.token-value.blue  { color: #60a5fa; }
+.token-value.green { color: #4ade80; }
+
+/* ── Cache ── */
+.cache-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.cache-stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cache-label {
+  font-size: 11px;
+  color: #555;
+}
+
+.cache-val {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cache-val.cyan   { color: #67e8f9; }
+.cache-val.yellow { color: #facc15; }
+
+/* ── Activity ── */
+.activity-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.activity-item {
+  font-size: 11px;
+  color: #555;
+}
+
+.activity-label {
+  margin-right: 3px;
+}
+
+.activity-item span:last-child {
+  color: #888;
+}
+
+.mono { font-family: monospace; font-size: 11px; }
+
+/* ── Footer ── */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 14px;
+  border-top: 1px solid #222;
+}
+
+.footer-time {
+  font-size: 10px;
+  color: #444;
+}
+
+.refresh-btn {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.refresh-btn:hover { color: #aaa; background: #2a2a2a; }

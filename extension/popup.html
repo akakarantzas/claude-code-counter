@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code Counter</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="icons/icon48.png" width="20" height="20" alt="" />
+      <span class="title">Claude Code Counter</span>
+    </div>
+    <div class="status-dot" id="statusDot" title="Connection status"></div>
+  </div>
+
+  <div id="disconnected" class="state-panel">
+    <div class="disconnected-icon">⚡</div>
+    <p class="disconnected-title">Native host not running</p>
+    <p class="disconnected-sub">Run the installer to connect Claude Code Counter to your Claude Code sessions.</p>
+    <a class="btn-install" href="https://github.com/YOUR_USERNAME/claude-counter#installation" target="_blank">
+      View install instructions
+    </a>
+  </div>
+
+  <div id="noSession" class="state-panel" style="display:none">
+    <div class="disconnected-icon">🔍</div>
+    <p class="disconnected-title">No active session</p>
+    <p class="disconnected-sub">Start Claude Code and send a message to see token usage.</p>
+  </div>
+
+  <div id="stats" style="display:none">
+    <!-- Context Window -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-title">Context window</span>
+        <span class="section-meta" id="ctxMeta"></span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="ctxBar"></div>
+      </div>
+      <div class="bar-labels">
+        <span id="ctxUsed"></span>
+        <span id="ctxTotal"></span>
+      </div>
+    </section>
+
+    <!-- Tokens -->
+    <section class="section">
+      <div class="section-title">Session tokens</div>
+      <div class="token-grid">
+        <div class="token-card">
+          <div class="token-label">Input</div>
+          <div class="token-value blue" id="inputTokens">—</div>
+        </div>
+        <div class="token-card">
+          <div class="token-label">Output</div>
+          <div class="token-value green" id="outputTokens">—</div>
+        </div>
+        <div class="token-card">
+          <div class="token-label">Total</div>
+          <div class="token-value" id="totalTokens">—</div>
+        </div>
+        <div class="token-card">
+          <div class="token-label">Turns</div>
+          <div class="token-value" id="turns">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cache -->
+    <section class="section" id="cacheSection" style="display:none">
+      <div class="section-header">
+        <span class="section-title">Prompt cache</span>
+        <span class="section-meta" id="cacheSavings"></span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill yellow" id="cacheBar"></div>
+      </div>
+      <div class="cache-row">
+        <div class="cache-stat">
+          <span class="cache-label">Read</span>
+          <span class="cache-val cyan" id="cacheRead">—</span>
+        </div>
+        <div class="cache-stat">
+          <span class="cache-label">Written</span>
+          <span class="cache-val yellow" id="cacheWrite">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section class="section section-footer">
+      <div class="activity-row">
+        <span class="activity-item"><span class="activity-label">Tools</span> <span id="toolCalls">—</span></span>
+        <span class="activity-item"><span class="activity-label">Duration</span> <span id="duration">—</span></span>
+        <span class="activity-item"><span class="activity-label">Session</span> <span id="sessionId" class="mono">—</span></span>
+      </div>
+    </section>
+  </div>
+
+  <div class="footer">
+    <span id="lastUpdated" class="footer-time"></span>
+    <button id="refreshBtn" class="refresh-btn" title="Refresh">↻</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
