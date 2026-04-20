@@ -1,6 +1,7 @@
 # Claude Code Counter
 
 Ever wonder how many tokens you're burning in a Claude Code session? I kept hitting Claude Code's context limit mid-session with no warning, so I built a browser extension that shows your token usage in real time.
+
 Context window usage, token counts, cache stats, all sitting in your toolbar while you work.
 
 ## Installation
